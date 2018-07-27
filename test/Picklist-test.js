@@ -7,7 +7,7 @@ import Picklist from '../src/Picklist'
 describe('Picklist', () => {
   afterEach(cleanup)
 
-  it('should be able to render a component', () => {
+  it('should render Picklist', () => {
     const {container} = render(<Picklist />)
     expect(container).to.not.be.null()
   })
