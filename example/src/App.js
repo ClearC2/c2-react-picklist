@@ -16,7 +16,6 @@ export default function App () {
           <Component initialState={{value: []}}>
             {({setState, state}) => (
               <Picklist
-                searchIcon={'S'}
                 options={options}
                 value={state.value}
                 onChange={(value) => setState({value})}
