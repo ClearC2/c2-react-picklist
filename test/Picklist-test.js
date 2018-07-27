@@ -8,7 +8,7 @@ describe('Picklist', () => {
   afterEach(cleanup)
 
   it('should render Picklist', () => {
-    const {container} = render(<Picklist />)
+    const {container} = renderPicklist({})
     expect(container).to.not.be.null()
   })
 
@@ -17,7 +17,7 @@ describe('Picklist', () => {
       {value: 'foo', label: 'Foo'},
       {value: 'bar', label: 'Bar'}
     ]
-    const {queryByTestId} = render(<Picklist options={options} value={[]} />)
+    const {queryByTestId} = renderPicklist({options})
     const option1 = queryByTestId('options-foo')
     expect(option1).to.not.be.null()
     const option2 = queryByTestId('options-bar')
@@ -29,7 +29,7 @@ describe('Picklist', () => {
       {value: 'foo', label: 'Foo'},
       {value: 'bar', label: 'Bar'}
     ]
-    const {queryByTestId} = render(<Picklist options={options} value={options} />)
+    const {queryByTestId} = renderPicklist({options, initialValue: options})
     const option1 = queryByTestId('selected-foo')
     expect(option1).to.not.be.null()
     const option2 = queryByTestId('selected-bar')
@@ -41,9 +41,7 @@ describe('Picklist', () => {
       {id: 'foo', label: 'Foo'},
       {id: 'bar', label: 'Bar'}
     ]
-    const {getByTestId} = render(
-      <Picklist options={options} value={[]} valueKey='id' />
-    )
+    const {getByTestId} = renderPicklist({options, valueKey: 'id'})
     expect(getByTestId('options-foo').innerHTML).to.include('Foo')
     expect(getByTestId('options-bar').innerHTML).to.include('Bar')
   })
@@ -53,9 +51,7 @@ describe('Picklist', () => {
       {value: 'foo', display: 'Foo'},
       {value: 'bar', display: 'Bar'}
     ]
-    const {getByTestId} = render(
-      <Picklist options={options} value={[]} labelKey='display' />
-    )
+    const {getByTestId} = renderPicklist({options, labelKey: 'display'})
     expect(getByTestId('options-foo').innerHTML).to.include('Foo')
     expect(getByTestId('options-bar').innerHTML).to.include('Bar')
   })
@@ -66,20 +62,18 @@ describe('Picklist', () => {
       {value: 'bar', label: 'Bar'},
       {value: 'baz', label: 'Baz'}
     ]
-    const {getByTestId, queryByTestId} = render((
-      <Component initialState={{value: []}}>
-        {({setState, state}) => (
-          <Picklist
-            options={options}
-            value={state.value}
-            onChange={(value) => setState({value})}
-          />
-        )}
-      </Component>
-    ))
+    let currentValue = []
+    const {getByTestId, queryByTestId} = renderPicklist({
+      options,
+      initialValue: currentValue,
+      onChange: value => { currentValue = value }
+    })
+    // test ui
     fireEvent.click(getByTestId('options-bar'))
     expect(getByTestId('selected-bar')).to.not.be.null()
     expect(queryByTestId('options-bar')).to.be.null()
+    //test data
+    expect(currentValue).to.deep.equal([options[1]])
   })
 
   it('should move selected value to options panel', () => {
@@ -88,20 +82,18 @@ describe('Picklist', () => {
       {value: 'bar', label: 'Bar'},
       {value: 'baz', label: 'Baz'}
     ]
-    const {getByTestId, queryByTestId} = render((
-      <Component initialState={{value: [options[1]]}}>
-        {({setState, state}) => (
-          <Picklist
-            options={options}
-            value={state.value}
-            onChange={(value) => setState({value})}
-          />
-        )}
-      </Component>
-    ))
+    let currentValue = [options[1]]
+    const {getByTestId, queryByTestId} = renderPicklist({
+      options,
+      initialValue: currentValue,
+      onChange: value => { currentValue = value }
+    })
+    // test ui
     fireEvent.click(getByTestId('selected-bar'))
     expect(getByTestId('options-bar')).to.not.be.null()
     expect(queryByTestId('selected-bar')).to.be.null()
+    // test data
+    expect(currentValue).to.deep.equal([])
   })
 
   it('should move all options to select panel on options panel bulk action click', () => {
@@ -110,21 +102,19 @@ describe('Picklist', () => {
       {value: 'bar', label: 'Bar'},
       {value: 'baz', label: 'Baz'}
     ]
-    const {getByTestId, queryByTestId} = render((
-      <Component initialState={{value: []}}>
-        {({setState, state}) => (
-          <Picklist
-            options={options}
-            value={state.value}
-            onChange={(value) => setState({value})}
-          />
-        )}
-      </Component>
-    ))
+    let currentValue = []
+    const {getByTestId, queryByTestId} = renderPicklist({
+      options,
+      initialValue: currentValue,
+      onChange: value => { currentValue = value }
+    })
+    // test ui
     fireEvent.click(getByTestId('options-bulk-action'))
     options.forEach(option => {
       expect(queryByTestId(`selected-${option.value}`)).to.not.be.null()
     })
+    // test data
+    expect(currentValue).to.deep.equal(options)
   })
 
   it('should move all selected to options panel on selected panel bulk action click', () => {
@@ -133,21 +123,19 @@ describe('Picklist', () => {
       {value: 'bar', label: 'Bar'},
       {value: 'baz', label: 'Baz'}
     ]
-    const {getByTestId, queryByTestId} = render((
-      <Component initialState={{value: options}}>
-        {({setState, state}) => (
-          <Picklist
-            options={options}
-            value={state.value}
-            onChange={(value) => setState({value})}
-          />
-        )}
-      </Component>
-    ))
+    let currentValue = options
+    const {getByTestId, queryByTestId} = renderPicklist({
+      options,
+      initialValue: currentValue,
+      onChange: value => { currentValue = value }
+    })
+    // test ui
     fireEvent.click(getByTestId('selected-bulk-action'))
     options.forEach(option => {
       expect(queryByTestId(`selected-${option.value}`)).to.be.null()
     })
+    // test data
+    expect(currentValue).to.deep.equal([])
   })
 
   it('should filter options on options search', () => {
@@ -156,17 +144,10 @@ describe('Picklist', () => {
       {value: 'bar', label: 'Bar'},
       {value: 'baz', label: 'Baz'}
     ]
-    const {getByTestId, queryByTestId} = render((
-      <Component initialState={{value: []}}>
-        {({setState, state}) => (
-          <Picklist
-            options={options}
-            value={state.value}
-            onChange={(value) => setState({value})}
-          />
-        )}
-      </Component>
-    ))
+    const {getByTestId, queryByTestId} = renderPicklist({
+      options,
+      initialValue: []
+    })
     fireEvent.click(getByTestId('options-search-toggle'))
     const searchInput = getByTestId('options-search-input')
     typeText(searchInput, 'Ba')
@@ -181,17 +162,10 @@ describe('Picklist', () => {
       {value: 'bar', label: 'Bar'},
       {value: 'baz', label: 'Baz'}
     ]
-    const {getByTestId, queryByTestId} = render((
-      <Component initialState={{value: options}}>
-        {({setState, state}) => (
-          <Picklist
-            options={options}
-            value={state.value}
-            onChange={(value) => setState({value})}
-          />
-        )}
-      </Component>
-    ))
+    const {getByTestId, queryByTestId} = renderPicklist({
+      options,
+      initialValue: options
+    })
     fireEvent.click(getByTestId('selected-search-toggle'))
     const searchInput = getByTestId('selected-search-input')
     typeText(searchInput, 'Bar')
@@ -206,28 +180,45 @@ describe('Picklist', () => {
       {value: 'bar', label: 'Bar'},
       {value: 'baz', label: 'Baz'}
     ]
-    const {getByTestId} = render((
-      <Component initialState={{value: [options[1]]}}>
-        {({setState, state}) => (
-          <Picklist
-            options={options}
-            value={state.value}
-            onChange={(value) => setState({value})}
-            renderOption={({option, onClick, panelId}) => (
-              <span onClick={onClick} data-testid={`${panelId}-${option.value}`}>
-                {option.label.toUpperCase()}
-                {' '}
-                {panelId === 'options' ? '+' : '-'}
-              </span>
-            )}
-          />
-        )}
-      </Component>
-    ))
+    let currentValue = [options[1]]
+    const {getByTestId} = renderPicklist({
+      options,
+      initialValue: currentValue,
+      onChange: (value) => { currentValue = value },
+      renderOption: ({option, onClick, panelId}) => (
+        <span onClick={onClick} data-testid={`${panelId}-${option.value}`}>
+          {option.label.toUpperCase()}
+          {' '}
+          {panelId === 'options' ? '+' : '-'}
+        </span>
+      )
+    })
+    // test ui
     expect(getByTestId(`options-foo`).innerHTML).to.include('FOO +')
     expect(getByTestId(`selected-bar`).innerHTML).to.include('BAR -')
+    fireEvent.click(getByTestId('options-foo'))
+    // test data
+    expect(currentValue).to.deep.equal([options[1], options[0]])
   })
 })
+
+function renderPicklist ({initialValue = [], options = [], onChange = (() => {}), ...rest} = {}) {
+  return render((
+    <Component initialState={{value: initialValue}}>
+      {({setState, state}) => (
+        <Picklist
+          {...rest}
+          options={options}
+          value={state.value}
+          onChange={(value) => {
+            setState({value})
+            onChange(value)
+          }}
+        />
+      )}
+    </Component>
+  ))
+}
 
 function typeText (input, text) {
   input.value = text
