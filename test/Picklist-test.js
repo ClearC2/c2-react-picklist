@@ -4,11 +4,29 @@ import {render, cleanup, fireEvent} from 'react-testing-library'
 import {expect} from 'chai'
 import Picklist from '../src/Picklist'
 
+function renderPicklist ({initialValue = [], options = [], onChange = (() => {}), ...rest} = {}) {
+  return render((
+    <Component initialState={{value: initialValue}}>
+      {({setState, state}) => (
+        <Picklist
+          {...rest}
+          options={options}
+          value={state.value}
+          onChange={(value) => {
+            setState({value})
+            onChange(value)
+          }}
+        />
+      )}
+    </Component>
+  ))
+}
+
 describe('Picklist', () => {
   afterEach(cleanup)
 
   it('should render Picklist', () => {
-    const {container} = renderPicklist({})
+    const {container} = renderPicklist()
     expect(container).to.not.be.null()
   })
 
@@ -18,10 +36,8 @@ describe('Picklist', () => {
       {value: 'bar', label: 'Bar'}
     ]
     const {queryByTestId} = renderPicklist({options})
-    const option1 = queryByTestId('options-foo')
-    expect(option1).to.not.be.null()
-    const option2 = queryByTestId('options-bar')
-    expect(option2).to.not.be.null()
+    expect(queryByTestId('options-foo')).to.not.be.null()
+    expect(queryByTestId('options-bar')).to.not.be.null()
   })
 
   it('should render selected', () => {
@@ -30,10 +46,8 @@ describe('Picklist', () => {
       {value: 'bar', label: 'Bar'}
     ]
     const {queryByTestId} = renderPicklist({options, initialValue: options})
-    const option1 = queryByTestId('selected-foo')
-    expect(option1).to.not.be.null()
-    const option2 = queryByTestId('selected-bar')
-    expect(option2).to.not.be.null()
+    expect(queryByTestId('selected-foo')).to.not.be.null()
+    expect(queryByTestId('selected-bar')).to.not.be.null()
   })
 
   it('should handle custom value keys', () => {
@@ -70,7 +84,7 @@ describe('Picklist', () => {
     })
     // test ui
     fireEvent.click(getByTestId('options-bar'))
-    expect(getByTestId('selected-bar')).to.not.be.null()
+    expect(queryByTestId('selected-bar')).to.not.be.null()
     expect(queryByTestId('options-bar')).to.be.null()
     //test data
     expect(currentValue).to.deep.equal([options[1]])
@@ -90,7 +104,7 @@ describe('Picklist', () => {
     })
     // test ui
     fireEvent.click(getByTestId('selected-bar'))
-    expect(getByTestId('options-bar')).to.not.be.null()
+    expect(queryByTestId('options-bar')).to.not.be.null()
     expect(queryByTestId('selected-bar')).to.be.null()
     // test data
     expect(currentValue).to.deep.equal([])
@@ -201,24 +215,6 @@ describe('Picklist', () => {
     expect(currentValue).to.deep.equal([options[1], options[0]])
   })
 })
-
-function renderPicklist ({initialValue = [], options = [], onChange = (() => {}), ...rest} = {}) {
-  return render((
-    <Component initialState={{value: initialValue}}>
-      {({setState, state}) => (
-        <Picklist
-          {...rest}
-          options={options}
-          value={state.value}
-          onChange={(value) => {
-            setState({value})
-            onChange(value)
-          }}
-        />
-      )}
-    </Component>
-  ))
-}
 
 function typeText (input, text) {
   input.value = text
