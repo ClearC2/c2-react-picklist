@@ -1,6 +1,6 @@
 # c2-react-picklist [![CircleCI](https://circleci.com/gh/ClearC2/c2-react-picklist.svg?style=svg)](https://circleci.com/gh/ClearC2/c2-react-picklist)
 
-A bootstrap v4 picklist react component.
+A bootstrap v4 picklist react component. [See demo](https://clearc2.github.io/c2-react-picklist/).
 
 ## Install
 ```
