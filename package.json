@@ -10,7 +10,7 @@
     "build:docs": "rm -rf docs/*.js  && rm -rf docs/*.css && cd example && NODE_ENV=production webpack --mode production",
     "test": "mocha --require jsdom-global/register --require babel-core/register --require babel-polyfill --require ./test/test-helper.js --require ./test/null-compiler.js",
     "test:watch": "npm run test -- --watch",
-    "test:report": "nyc --reporter=html npm test"
+    "test:report": "nyc --reporter=html yarn test"
   },
   "husky": {
     "hooks": {
@@ -73,8 +73,8 @@
     "webpack-dev-server": "^3.1.0"
   },
   "peerDependencies": {
+    "bootstrap": "^4.0.0",
     "react": "^15.0.0 || ^16.0.0",
-    "react-dom": "^15.0.0 || ^16.0.0",
-    "bootstrap": "^4.0.0"
+    "react-dom": "^15.0.0 || ^16.0.0"
   }
 }

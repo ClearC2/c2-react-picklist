@@ -20,7 +20,10 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      - run: yarn test
+      - run: yarn test:report
+      - store_artifacts:
+          path: coverage
+          prefix: coverage
 #      - run: yarn build
 #      - run:
 #          command: yarn run semantic-release
