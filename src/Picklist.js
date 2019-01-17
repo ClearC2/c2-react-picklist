@@ -11,11 +11,13 @@ class Pane extends Component {
     onAction: PropTypes.func,
     actionElement: PropTypes.any,
     paneLabel: PropTypes.any,
+    height: PropTypes.number,
     paneRef: PropTypes.func,
     resize: PropTypes.func,
     panelId: PropTypes.string,
     searchElement: PropTypes.any,
-    renderItem: PropTypes.func
+    renderItem: PropTypes.func,
+    renderOption: PropTypes.func
   }
 
   static defaultProps = {
@@ -81,6 +83,7 @@ class Pane extends Component {
     const {
       valueKey,
       actionElement,
+      height,
       paneRef,
       paneLabel,
       panelId,
@@ -88,8 +91,9 @@ class Pane extends Component {
       searchInputClassName
     } = this.props
     const items = this.items()
+    const innerDivStyle = {height, overflow: height ? 'auto' : null}
     return (
-      <div ref={paneRef}>
+      <div ref={paneRef} >
         <div className='row'>
           <div className='col-3'>{paneLabel}</div>
           <div className={`col-9 text-right`}>
@@ -107,7 +111,7 @@ class Pane extends Component {
           </div>
         </div>
         <hr style={{margin: 0}} />
-        <div>
+        <div style={innerDivStyle}>
           {this.state.search ? (
             <input
               type='text'
