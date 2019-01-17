@@ -102,6 +102,7 @@ var Pane = function (_Component) {
       var _props = this.props,
           valueKey = _props.valueKey,
           actionElement = _props.actionElement,
+          height = _props.height,
           paneRef = _props.paneRef,
           paneLabel = _props.paneLabel,
           panelId = _props.panelId,
@@ -109,6 +110,7 @@ var Pane = function (_Component) {
           searchInputClassName = _props.searchInputClassName;
 
       var items = this.items();
+      var innerDivStyle = { height: height, overflow: height ? 'auto' : null };
       return _react2.default.createElement(
         'div',
         { ref: paneRef },
@@ -143,7 +145,7 @@ var Pane = function (_Component) {
         _react2.default.createElement('hr', { style: { margin: 0 } }),
         _react2.default.createElement(
           'div',
-          null,
+          { style: innerDivStyle },
           this.state.search ? _react2.default.createElement('input', {
             type: 'text',
             className: searchInputClassName,
@@ -182,11 +184,13 @@ Pane.propTypes = {
   onAction: _propTypes2.default.func,
   actionElement: _propTypes2.default.any,
   paneLabel: _propTypes2.default.any,
+  height: _propTypes2.default.number,
   paneRef: _propTypes2.default.func,
   resize: _propTypes2.default.func,
   panelId: _propTypes2.default.string,
   searchElement: _propTypes2.default.any,
-  renderItem: _propTypes2.default.func
+  renderItem: _propTypes2.default.func,
+  renderOption: _propTypes2.default.func
 };
 Pane.defaultProps = {
   items: [],
