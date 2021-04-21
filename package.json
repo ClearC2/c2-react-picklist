@@ -7,7 +7,7 @@
     "start": "cd example && webpack-dev-server --content-base dist --port 8083 --hot --env.mode development",
     "build": "babel -d dist/ src/",
     "build:watch": "babel -w -d dist/ src/",
-    "build:docs": "rm -rf docs/*.js  && rm -rf docs/*.css && cd example && NODE_ENV=production webpack --mode production",
+    "build:docs": "rm -rf docs/*.js  && rm -rf docs/*.css && cd example && NODE_ENV=production webpack --env.mode production",
     "test": "NODE_ENV=test mocha --require jsdom-global/register --require @babel/register  --require ./test/test-helper.js --require ./test/null-compiler.js",
     "test:watch": "npm run test -- --watch",
     "test:report": "nyc --reporter=html yarn test",
