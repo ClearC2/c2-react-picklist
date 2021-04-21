@@ -49,6 +49,7 @@
   "homepage": "https://github.com/ClearC2/c2-react-picklist#readme",
   "devDependencies": {
     "@clearc2/c2-react-config": "^3.1.0",
+    "@hot-loader/react-dom": "^16.2.0",
     "@reactions/component": "^2.0.2",
     "babel-plugin-module-resolver": "^3.2.0",
     "c2-semantic-release": "ClearC2/c2-semantic-release#^1.0.0",
