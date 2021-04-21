@@ -1,15 +1,15 @@
 import React, {Component, useRef} from 'react'
 import PropTypes from 'prop-types'
-import {useDrag, useDrop} from 'react-dnd'
+import {DndProvider, useDrag, useDrop} from 'react-dnd'
+import {HTML5Backend} from 'react-dnd-html5-backend'
 
 const noop = () => {}
 
+// https://react-dnd.github.io/react-dnd/examples/sortable/simple
 function DnDOption (
   {
     option,
     index,
-    panelId,
-    valueKey,
     labelKey,
     onAction,
     moveOption
@@ -59,12 +59,12 @@ function DnDOption (
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
       item.index = hoverIndex
-    },
+    }
   })
-  const [_, drag] = useDrag({
+  const [{isDragging}, drag] = useDrag({
     type: 'option',
     item: () => {
-      return {index};
+      return {index}
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
@@ -77,6 +77,8 @@ function DnDOption (
     <span ref={ref} data-handler-id={handlerId}>
       <a
         href=''
+        style={{cursor: isDragging ? 'move' : 'pointer'}}
+        onClick={e => e.preventDefault()}
         onDoubleClick={e => {
           e.preventDefault()
           onAction([option])
@@ -87,6 +89,14 @@ function DnDOption (
       <br />
     </span>
   )
+}
+
+DnDOption.propTypes = {
+  option: PropTypes.object,
+  index: PropTypes.number,
+  labelKey: PropTypes.string,
+  onAction: PropTypes.func,
+  moveOption: PropTypes.func
 }
 
 class Pane extends Component {
@@ -104,7 +114,9 @@ class Pane extends Component {
     panelId: PropTypes.string,
     searchElement: PropTypes.any,
     renderItem: PropTypes.func,
-    renderOption: PropTypes.func
+    renderOption: PropTypes.func,
+    DnD: PropTypes.bool,
+    searchInputClassName: PropTypes.string
   }
 
   static defaultProps = {
@@ -116,7 +128,8 @@ class Pane extends Component {
     actionElement: 'Submit',
     paneLabel: 'Items',
     paneRef: noop,
-    resize: noop
+    resize: noop,
+    DnD: false
   }
 
   state = {
@@ -166,9 +179,8 @@ class Pane extends Component {
 
   moveOption = (dragIndex, hoverIndex) => {
     const items = this.items()
-    const dragItem = items[dragIndex]
     items.splice(hoverIndex, 0, items.splice(dragIndex, 1)[0])
-    console.log({items})
+    this.props.onChange(items)
   }
 
   render () {
@@ -313,29 +325,31 @@ class Picklist extends Component {
 
   render () {
     return (
-      <div className='row c2-react-picklist'>
-        <div className='col-6 c2-react-picklist-pane'>
-          <Pane
-            actionElement='Add all'
-            {...this.props}
-            paneLabel={this.props.leftPaneLabel}
-            items={this.getAvailableOptions()}
-            onAction={options => this.add(options)}
-            panelId='options'
-            DnD={false}
-          />
+      <DndProvider backend={HTML5Backend}>
+        <div className='row c2-react-picklist'>
+          <div className='col-6 c2-react-picklist-pane'>
+            <Pane
+              actionElement='Add all'
+              {...this.props}
+              paneLabel={this.props.leftPaneLabel}
+              items={this.getAvailableOptions()}
+              onAction={options => this.add(options)}
+              panelId='options'
+              DnD={false}
+            />
+          </div>
+          <div className='col-6 c2-react-picklist-pane'>
+            <Pane
+              actionElement='Remove all'
+              {...this.props}
+              paneLabel={this.props.rightPaneLabel}
+              items={this.props.value}
+              onAction={options => this.remove(options)}
+              panelId='selected'
+            />
+          </div>
         </div>
-        <div className='col-6 c2-react-picklist-pane'>
-          <Pane
-            actionElement='Remove all'
-            {...this.props}
-            paneLabel={this.props.rightPaneLabel}
-            items={this.props.value}
-            onAction={options => this.remove(options)}
-            panelId='selected'
-          />
-        </div>
-      </div>
+      </DndProvider>
     )
   }
 }
