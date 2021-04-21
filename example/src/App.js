@@ -19,6 +19,7 @@ export default function App () {
                 options={options}
                 value={state.value}
                 onChange={(value) => setState({value})}
+                DnD
               />
             )}
           </Component>
