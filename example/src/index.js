@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
-import './example.scss'
+import './example.css'
 
 const appElement = document.getElementById('app-root')
 
