@@ -239,8 +239,6 @@ class Pane extends Component {
                   key={option[valueKey]}
                   option={option}
                   index={i}
-                  panelId={panelId}
-                  valueKey={valueKey}
                   labelKey={labelKey}
                   onAction={onAction}
                   moveOption={this.moveOption}
