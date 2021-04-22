@@ -1,103 +1,7 @@
-import React, {Component, useRef} from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {DndProvider, useDrag, useDrop} from 'react-dnd'
-import {HTML5Backend} from 'react-dnd-html5-backend'
 
 const noop = () => {}
-
-// https://react-dnd.github.io/react-dnd/examples/sortable/simple
-function DnDOption (
-  {
-    option,
-    index,
-    labelKey,
-    onAction,
-    moveOption
-  }
-) {
-  const ref = useRef(null)
-  const [{handlerId}, drop] = useDrop({
-    accept: 'option',
-    collect (monitor) {
-      return {
-        handlerId: monitor.getHandlerId()
-      }
-    },
-    hover (item, monitor) {
-      if (!ref.current) {
-        return
-      }
-      const dragIndex = item.index
-      const hoverIndex = index
-      // Don't replace items with themselves
-      if (dragIndex === hoverIndex) {
-        return
-      }
-      // Determine rectangle on screen
-      const hoverBoundingRect = ref.current?.getBoundingClientRect()
-      // Get vertical middle
-      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset()
-      // Get pixels to the top
-      const hoverClientY = clientOffset.y - hoverBoundingRect.top
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-      // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return
-      }
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return
-      }
-      // Time to actually perform the action
-      moveOption(dragIndex, hoverIndex)
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
-      item.index = hoverIndex
-    }
-  })
-  const [{isDragging}, drag] = useDrag({
-    type: 'option',
-    item: () => {
-      return {index}
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging()
-    })
-  })
-
-  drag(drop(ref))
-
-  return (
-    <span ref={ref} data-handler-id={handlerId}>
-      <a
-        href=''
-        style={{cursor: isDragging ? 'move' : 'pointer'}}
-        onClick={e => e.preventDefault()}
-        onDoubleClick={e => {
-          e.preventDefault()
-          onAction([option])
-        }}
-      >
-        {option[labelKey]}
-      </a>
-      <br />
-    </span>
-  )
-}
-
-DnDOption.propTypes = {
-  option: PropTypes.object,
-  index: PropTypes.number,
-  labelKey: PropTypes.string,
-  onAction: PropTypes.func,
-  moveOption: PropTypes.func
-}
 
 class Pane extends Component {
   static propTypes = {
@@ -105,17 +9,15 @@ class Pane extends Component {
     valueKey: PropTypes.string,
     labelKey: PropTypes.string,
     onAction: PropTypes.func,
-    onChange: PropTypes.func,
     actionElement: PropTypes.any,
     paneLabel: PropTypes.any,
-    height: PropTypes.number,
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     paneRef: PropTypes.func,
     resize: PropTypes.func,
     panelId: PropTypes.string,
     searchElement: PropTypes.any,
     renderItem: PropTypes.func,
     renderOption: PropTypes.func,
-    DnD: PropTypes.bool,
     searchInputClassName: PropTypes.string
   }
 
@@ -124,12 +26,10 @@ class Pane extends Component {
     valueKey: 'value',
     labelKey: 'label',
     onAction: noop,
-    onChange: noop,
     actionElement: 'Submit',
     paneLabel: 'Items',
     paneRef: noop,
-    resize: noop,
-    DnD: false
+    resize: noop
   }
 
   state = {
@@ -177,18 +77,10 @@ class Pane extends Component {
     )
   }
 
-  moveOption = (dragIndex, hoverIndex) => {
-    const items = this.items()
-    items.splice(hoverIndex, 0, items.splice(dragIndex, 1)[0])
-    this.props.onChange(items)
-  }
-
   render () {
     const {
       valueKey,
-      labelKey,
       actionElement,
-      onAction,
       height,
       paneRef,
       paneLabel,
@@ -232,26 +124,12 @@ class Pane extends Component {
               data-testid={`${panelId}-search-input`}
             />
           ) : null}
-          {items.map((option, i) => {
-            if (this.props.DnD) {
-              return (
-                <DnDOption
-                  key={option[valueKey]}
-                  option={option}
-                  index={i}
-                  labelKey={labelKey}
-                  onAction={onAction}
-                  moveOption={this.moveOption}
-                />
-              )
-            }
-            return (
-              <span key={option[valueKey]}>
-                {this.renderOption(option)}
-                <br />
-              </span>
-            )
-          })}
+          {items.map(option => (
+            <span key={option[valueKey]}>
+              {this.renderOption(option)}
+              <br />
+            </span>
+          ))}
           {items.length === 0 ? <br /> : null}
         </div>
       </div>
@@ -266,13 +144,12 @@ class Picklist extends Component {
     labelKey: PropTypes.string,
     valueKey: PropTypes.string,
     onChange: PropTypes.func,
-    height: PropTypes.number,
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     leftPaneLabel: PropTypes.any,
     rightPaneLabel: PropTypes.any,
     searchElement: PropTypes.any,
     searchInputClassName: PropTypes.any,
-    renderOption: PropTypes.func,
-    DnD: PropTypes.bool
+    renderOption: PropTypes.func
   }
 
   static defaultProps = {
@@ -285,8 +162,7 @@ class Picklist extends Component {
     leftPaneLabel: 'Options',
     rightPaneLabel: 'Selected',
     searchElement: <span>&#128269;</span>,
-    searchInputClassName: 'form-control form-control-sm',
-    DnD: false
+    searchInputClassName: 'form-control form-control-sm'
   }
 
   add = options => {
@@ -323,31 +199,28 @@ class Picklist extends Component {
 
   render () {
     return (
-      <DndProvider backend={HTML5Backend}>
-        <div className='row c2-react-picklist'>
-          <div className='col-6 c2-react-picklist-pane'>
-            <Pane
-              actionElement='Add all'
-              {...this.props}
-              paneLabel={this.props.leftPaneLabel}
-              items={this.getAvailableOptions()}
-              onAction={options => this.add(options)}
-              panelId='options'
-              DnD={false}
-            />
-          </div>
-          <div className='col-6 c2-react-picklist-pane'>
-            <Pane
-              actionElement='Remove all'
-              {...this.props}
-              paneLabel={this.props.rightPaneLabel}
-              items={this.props.value}
-              onAction={options => this.remove(options)}
-              panelId='selected'
-            />
-          </div>
+      <div className='row c2-react-picklist'>
+        <div className='col-6 c2-react-picklist-pane'>
+          <Pane
+            actionElement='Add all'
+            {...this.props}
+            paneLabel={this.props.leftPaneLabel}
+            items={this.getAvailableOptions()}
+            onAction={options => this.add(options)}
+            panelId='options'
+          />
         </div>
-      </DndProvider>
+        <div className='col-6 c2-react-picklist-pane'>
+          <Pane
+            actionElement='Remove all'
+            {...this.props}
+            paneLabel={this.props.rightPaneLabel}
+            items={this.props.value}
+            onAction={options => this.remove(options)}
+            panelId='selected'
+          />
+        </div>
+      </div>
     )
   }
 }
