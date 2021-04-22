@@ -9,7 +9,6 @@ const options = [
 ]
 
 export default function App () {
-  const [allowDnD, setAllowDnD] = React.useState(false)
   return (
     <div className='container mt-5'>
       <div className='row justify-content-center'>
@@ -20,20 +19,10 @@ export default function App () {
                 options={options}
                 value={state.value}
                 onChange={(value) => setState({value})}
-                DnD={allowDnD}
               />
             )}
           </Component>
         </div>
-        <label style={{marginLeft: 10}}>
-          <input
-            type='checkbox'
-            checked={allowDnD}
-            onChange={e => setAllowDnD(e.target.checked)}
-          />
-          &nbsp;
-          allow Drag and Drop
-        </label>
       </div>
     </div>
   )
