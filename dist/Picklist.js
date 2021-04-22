@@ -7,7 +7,6 @@ import _inherits from "@babel/runtime-corejs3/helpers/esm/inherits";
 import _possibleConstructorReturn from "@babel/runtime-corejs3/helpers/esm/possibleConstructorReturn";
 import _getPrototypeOf from "@babel/runtime-corejs3/helpers/esm/getPrototypeOf";
 import _defineProperty from "@babel/runtime-corejs3/helpers/esm/defineProperty";
-import _slicedToArray from "@babel/runtime-corejs3/helpers/esm/slicedToArray";
 
 (function () {
   var enterModule = typeof reactHotLoaderGlobal !== 'undefined' ? reactHotLoaderGlobal.enterModule : undefined;
@@ -17,12 +16,12 @@ import _slicedToArray from "@babel/runtime-corejs3/helpers/esm/slicedToArray";
 import _concatInstanceProperty from "@babel/runtime-corejs3/core-js-stable/instance/concat";
 import _filterInstanceProperty from "@babel/runtime-corejs3/core-js-stable/instance/filter";
 import _includesInstanceProperty from "@babel/runtime-corejs3/core-js-stable/instance/includes";
-import _spliceInstanceProperty from "@babel/runtime-corejs3/core-js-stable/instance/splice";
 import _mapInstanceProperty from "@babel/runtime-corejs3/core-js-stable/instance/map";
 import _sliceInstanceProperty from "@babel/runtime-corejs3/core-js-stable/instance/slice";
 import _forEachInstanceProperty from "@babel/runtime-corejs3/core-js-stable/instance/for-each";
 import _findInstanceProperty from "@babel/runtime-corejs3/core-js-stable/instance/find";
 import _indexOfInstanceProperty from "@babel/runtime-corejs3/core-js-stable/instance/index-of";
+import _spliceInstanceProperty from "@babel/runtime-corejs3/core-js-stable/instance/splice";
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = _Reflect$construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
@@ -32,139 +31,10 @@ var __signature__ = typeof reactHotLoaderGlobal !== 'undefined' ? reactHotLoader
   return a;
 };
 
-import React, { Component, useRef } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 
-var noop = function noop() {}; // https://react-dnd.github.io/react-dnd/examples/sortable/simple
-
-
-function DnDOption(_ref) {
-  var option = _ref.option,
-      index = _ref.index,
-      labelKey = _ref.labelKey,
-      onAction = _ref.onAction,
-      moveOption = _ref.moveOption;
-  var ref = useRef(null);
-
-  var _useDrop = useDrop({
-    accept: 'option',
-    collect: function collect(monitor) {
-      return {
-        handlerId: monitor.getHandlerId()
-      };
-    },
-    hover: function hover(item, monitor) {
-      var _ref$current;
-
-      if (!ref.current) {
-        return;
-      }
-
-      var dragIndex = item.index;
-      var hoverIndex = index; // Don't replace items with themselves
-
-      // Don't replace items with themselves
-      if (dragIndex === hoverIndex) {
-        return;
-      } // Determine rectangle on screen
-
-
-      // Determine rectangle on screen
-      var hoverBoundingRect = (_ref$current = ref.current) === null || _ref$current === void 0 ? void 0 : _ref$current.getBoundingClientRect(); // Get vertical middle
-
-      // Get vertical middle
-      var hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2; // Determine mouse position
-
-      // Determine mouse position
-      var clientOffset = monitor.getClientOffset(); // Get pixels to the top
-
-      // Get pixels to the top
-      var hoverClientY = clientOffset.y - hoverBoundingRect.top; // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-      // Dragging downwards
-
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-      // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
-      } // Dragging upwards
-
-
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      } // Time to actually perform the action
-
-
-      // Time to actually perform the action
-      moveOption(dragIndex, hoverIndex); // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
-
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
-      item.index = hoverIndex;
-    }
-  }),
-      _useDrop2 = _slicedToArray(_useDrop, 2),
-      handlerId = _useDrop2[0].handlerId,
-      drop = _useDrop2[1];
-
-  var _useDrag = useDrag({
-    type: 'option',
-    item: function item() {
-      return {
-        index: index
-      };
-    },
-    collect: function collect(monitor) {
-      return {
-        isDragging: monitor.isDragging()
-      };
-    }
-  }),
-      _useDrag2 = _slicedToArray(_useDrag, 2),
-      isDragging = _useDrag2[0].isDragging,
-      drag = _useDrag2[1];
-
-  drag(drop(ref));
-  return /*#__PURE__*/React.createElement("span", {
-    ref: ref,
-    "data-handler-id": handlerId
-  }, /*#__PURE__*/React.createElement("a", {
-    href: "",
-    style: {
-      cursor: isDragging ? 'move' : 'pointer'
-    },
-    onClick: function onClick(e) {
-      return e.preventDefault();
-    },
-    onDoubleClick: function onDoubleClick(e) {
-      e.preventDefault();
-      onAction([option]);
-    }
-  }, option[labelKey]), /*#__PURE__*/React.createElement("br", null));
-}
-
-__signature__(DnDOption, "useRef{ref}\nuseDrop{[{handlerId}, drop]}\nuseDrag{[{isDragging}, drag]}", function () {
-  return [useDrop, useDrag];
-});
-
-DnDOption.propTypes = {
-  option: PropTypes.object,
-  index: PropTypes.number,
-  labelKey: PropTypes.string,
-  onAction: PropTypes.func,
-  moveOption: PropTypes.func
-};
+var noop = function noop() {};
 
 var Pane = /*#__PURE__*/function (_Component) {
   _inherits(Pane, _Component);
@@ -257,14 +127,6 @@ var Pane = /*#__PURE__*/function (_Component) {
       }, option[labelKey]);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "moveOption", function (dragIndex, hoverIndex) {
-      var items = _this.items();
-
-      _spliceInstanceProperty(items).call(items, hoverIndex, 0, _spliceInstanceProperty(items).call(items, dragIndex, 1)[0]);
-
-      _this.props.onChange(items);
-    });
-
     return _this;
   }
 
@@ -275,9 +137,7 @@ var Pane = /*#__PURE__*/function (_Component) {
 
       var _this$props3 = this.props,
           valueKey = _this$props3.valueKey,
-          labelKey = _this$props3.labelKey,
           actionElement = _this$props3.actionElement,
-          onAction = _this$props3.onAction,
           height = _this$props3.height,
           paneRef = _this$props3.paneRef,
           paneLabel = _this$props3.paneLabel,
@@ -324,18 +184,7 @@ var Pane = /*#__PURE__*/function (_Component) {
           });
         },
         "data-testid": "".concat(panelId, "-search-input")
-      }) : null, _mapInstanceProperty(items).call(items, function (option, i) {
-        if (_this2.props.DnD) {
-          return /*#__PURE__*/React.createElement(DnDOption, {
-            key: option[valueKey],
-            option: option,
-            index: i,
-            labelKey: labelKey,
-            onAction: onAction,
-            moveOption: _this2.moveOption
-          });
-        }
-
+      }) : null, _mapInstanceProperty(items).call(items, function (option) {
         return /*#__PURE__*/React.createElement("span", {
           key: option[valueKey]
         }, _this2.renderOption(option), /*#__PURE__*/React.createElement("br", null));
@@ -358,17 +207,15 @@ _defineProperty(Pane, "propTypes", {
   valueKey: PropTypes.string,
   labelKey: PropTypes.string,
   onAction: PropTypes.func,
-  onChange: PropTypes.func,
   actionElement: PropTypes.any,
   paneLabel: PropTypes.any,
-  height: PropTypes.number,
+  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   paneRef: PropTypes.func,
   resize: PropTypes.func,
   panelId: PropTypes.string,
   searchElement: PropTypes.any,
   renderItem: PropTypes.func,
   renderOption: PropTypes.func,
-  DnD: PropTypes.bool,
   searchInputClassName: PropTypes.string
 });
 
@@ -377,12 +224,10 @@ _defineProperty(Pane, "defaultProps", {
   valueKey: 'value',
   labelKey: 'label',
   onAction: noop,
-  onChange: noop,
   actionElement: 'Submit',
   paneLabel: 'Items',
   paneRef: noop,
-  resize: noop,
-  DnD: false
+  resize: noop
 });
 
 var Picklist = /*#__PURE__*/function (_Component2) {
@@ -471,9 +316,7 @@ var Picklist = /*#__PURE__*/function (_Component2) {
     value: function render() {
       var _this4 = this;
 
-      return /*#__PURE__*/React.createElement(DndProvider, {
-        backend: HTML5Backend
-      }, /*#__PURE__*/React.createElement("div", {
+      return /*#__PURE__*/React.createElement("div", {
         className: "row c2-react-picklist"
       }, /*#__PURE__*/React.createElement("div", {
         className: "col-6 c2-react-picklist-pane"
@@ -485,8 +328,7 @@ var Picklist = /*#__PURE__*/function (_Component2) {
         onAction: function onAction(options) {
           return _this4.add(options);
         },
-        panelId: "options",
-        DnD: false
+        panelId: "options"
       }))), /*#__PURE__*/React.createElement("div", {
         className: "col-6 c2-react-picklist-pane"
       }, /*#__PURE__*/React.createElement(Pane, _extends({
@@ -498,7 +340,7 @@ var Picklist = /*#__PURE__*/function (_Component2) {
           return _this4.remove(options);
         },
         panelId: "selected"
-      })))));
+      }))));
     }
   }, {
     key: "__reactstandin__regenerateByEval",
@@ -518,13 +360,12 @@ _defineProperty(Picklist, "propTypes", {
   labelKey: PropTypes.string,
   valueKey: PropTypes.string,
   onChange: PropTypes.func,
-  height: PropTypes.number,
+  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   leftPaneLabel: PropTypes.any,
   rightPaneLabel: PropTypes.any,
   searchElement: PropTypes.any,
   searchInputClassName: PropTypes.any,
-  renderOption: PropTypes.func,
-  DnD: PropTypes.bool
+  renderOption: PropTypes.func
 });
 
 _defineProperty(Picklist, "defaultProps", {
@@ -537,8 +378,7 @@ _defineProperty(Picklist, "defaultProps", {
   leftPaneLabel: 'Options',
   rightPaneLabel: 'Selected',
   searchElement: /*#__PURE__*/React.createElement("span", null, "\uD83D\uDD0D"),
-  searchInputClassName: 'form-control form-control-sm',
-  DnD: false
+  searchInputClassName: 'form-control form-control-sm'
 });
 
 var _default = Picklist;
@@ -553,7 +393,6 @@ export default _default;
   }
 
   reactHotLoader.register(noop, "noop", "/home/circleci/repo/src/Picklist.js");
-  reactHotLoader.register(DnDOption, "DnDOption", "/home/circleci/repo/src/Picklist.js");
   reactHotLoader.register(Pane, "Pane", "/home/circleci/repo/src/Picklist.js");
   reactHotLoader.register(Picklist, "Picklist", "/home/circleci/repo/src/Picklist.js");
   reactHotLoader.register(_default, "default", "/home/circleci/repo/src/Picklist.js");

@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/ClearC2/c2-react-picklist/compare/v1.2.0...v1.3.0) (2021-04-22)
+
+
+### Features
+
+* remove drag and drop ([e9a6097](https://github.com/ClearC2/c2-react-picklist/commit/e9a609737a71e5e5a9c4932613f43844c9726771))
+
 # [1.2.0](https://github.com/ClearC2/c2-react-picklist/compare/v1.1.0...v1.2.0) (2021-04-21)
 
 
